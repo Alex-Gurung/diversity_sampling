@@ -1,0 +1,14 @@
+You will be given a programming problem.
+
+PROBLEM:
+{PROBLEM}
+
+Generate 4 high-level approaches to solving the provided problem, along with their probability (the estimated probability from 0.0 to 1.0 of this approach given the problem relative to the full distribution). Randomly sample the approaches from the full distribution.
+
+For each of the 4 approaches:
+
+Write each approach as a complete summary of the full reasoning that leads to it — not just the change. Walk from the problem's structure through the key decisions to a working solution, with this approach's distinctive decision (the change that makes it different) incorporated as the path you take. Make clear what that change is and why it works, and cover the core idea and the main steps. Give enough detail that a solver could reconstruct the entire line of reasoning and implement it without any further figuring-out. Aim for roughly 10-15 sentences.
+
+Each approach must be a prose description of the reasoning and the plan - do NOT include code or code blocks in the approaches.
+
+Put each approach inside its own <approach></approach> tags. Begin each approach with a line "Probability: <p>" giving its probability from 0.0 to 1.0, followed by the approach summary.

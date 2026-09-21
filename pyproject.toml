@@ -1,0 +1,45 @@
+[project]
+name = "diversity-sampling"
+version = "0.1.0"
+description = "Minimal VS and GrOoT diverse sampling for code generation"
+requires-python = ">=3.10"
+dependencies = ["openai>=1.0"]
+
+[dependency-groups]
+dev = ["pytest>=8", "ruff>=0.15"]
+
+[tool.ruff]
+# The Google Python Style Guide: 80 columns, 4-space indent.
+line-length = 80
+target-version = "py310"
+
+[tool.ruff.lint]
+select = [
+    "F",   # pyflakes
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "I",   # import order and grouping
+    "N",   # pep8-naming
+    "D",   # docstrings
+    "UP",  # pyupgrade
+    "B",   # bugbear
+    "C4",  # comprehensions
+    "SIM", # simplify
+    "BLE", # broad exception catches
+    "RUF",
+]
+ignore = [
+    "D107",    # __init__ is documented in the class docstring, per the guide
+    "D203",    # incompatible with D211, which the google convention selects
+    "D213",    # incompatible with D212, which the google convention selects
+    "RUF001",  # the prompt text is quoted verbatim, typographic dashes included
+]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["D100", "D103"]  # test names carry the description
+
+[tool.ruff.format]
+quote-style = "double"

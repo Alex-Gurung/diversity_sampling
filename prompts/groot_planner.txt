@@ -1,0 +1,42 @@
+You will be given a programming problem.
+
+PROBLEM:
+{PROBLEM}
+
+First, write out a decision tree for solving this problem inside <tree></tree> tags. Here is an example of the expected shape, written for a different, unrelated problem (find the k-th smallest element in an array) - use the format but not the content of this example:
+
+A. Sort the whole array, index into the result
+   A1. Sorting order
+       A1a. Ascending, answer at index k-1
+       A1b. Descending, answer at index n-k
+B. Maintain a bounded heap while scanning
+   B1. What the heap holds
+       B1a. Max-heap of the k smallest seen so far - pop when size exceeds k
+       B1b. Min-heap of everything - pop k times at the end
+C. Quickselect - partition, recurse into one side
+   C1. Pivot choice
+       C1a. Random pivot
+       C1b. Median-of-three
+D. Binary search on the answer value
+   D1. The predicate: how many elements are <= mid
+       D1a. Recount with a linear scan per step
+       D1b. Sort once, count by bisection per step
+
+The top-level entries of this tree should be fundamentally different strategies that seem like reasonable high-level approaches to solve this problem. Keep the tree high-level and compact, only briefly describing key decisions that meaningfully change results and are also reasonable alternatives. Obvious choices with no alternatives can be skipped over to keep the trees concise. Every root-to-leaf path should read as a coherent, distinct solution plan.
+
+Then pick the {N} root-to-leaf paths through the tree that best combine coverage of different strategies with likelihood of success. The {N} paths do not need to share any part of the tree - {N_WORD} approaches from {N_WORD} entirely different subtrees, with no overlap at all, are valid and often ideal. Immediately before each <approach> block, on its own line outside the tags, write the path it takes in the style "Path: B -> B1a". Inside the tags give the full approach summary itself: name the strategy and its one decisive insight; if the path relies on a formula, closed form, or feasibility rule, check it against each provided example and only commit if it reproduces the expected outputs - do this check briefly and state only its conclusion, do not write out step-by-step computations; pin down any output-format or tie-break rule the examples imply; and otherwise leave implementation details open for the solver. Fully self-contained prose that does not mention the tree, the labels, or the other approaches. Each approach must be a prose description of the reasoning and the plan - do NOT include code or code blocks in the approaches.
+
+Format your entire response exactly as:
+
+<tree>
+(the tree)
+</tree>
+
+Path: ...
+<approach>
+(the approach summary)
+</approach>
+
+({N_MINUS_1_WORD} more <approach> blocks, {N} in total - no other text before, between, or after)
+
+Do all of your thinking inside the tree and the approach blocks - if you are unsure, commit to your best guess rather than reasoning outside them.

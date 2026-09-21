@@ -1,0 +1,12 @@
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+.venv/
+
+# resolved fresh by `uv sync`; nothing here is version-sensitive
+uv.lock
+
+# run artefacts
+*.jsonl
+!examples/*.jsonl
