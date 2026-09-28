@@ -37,7 +37,6 @@ LEAK_TERMS = [
     "the hint",
     "hint structure",
     "the provided approach",
-    "was supplied",
 ]
 
 
