@@ -21,6 +21,15 @@ pip install vllm
 
 vLLM serves the model; the scripts need nothing beyond the standard library.
 
+## Quick check
+
+```bash
+python demo.py
+```
+
+This starts a vLLM server on one GPU, samples the first problem in `examples/problems.jsonl` with VS
+and Groot, scores the samples, and prints each one's approach and whether it passed.
+
 ## Usage
 
 Start a vLLM server. `--data-parallel-size` is the number of GPUs to use; leave it out for one GPU.
@@ -29,16 +38,8 @@ Start a vLLM server. `--data-parallel-size` is the number of GPUs to use; leave 
 vllm serve Qwen/Qwen3-4B-Instruct-2507 --max-model-len 32768 --data-parallel-size 8
 ```
 
-Once it prints `Application startup complete`, try the three problems in `examples/` from another
-shell:
-
-```bash
-python sample.py --problems examples/problems.jsonl --method iid vs groot --out example_samples.jsonl
-python score.py --samples example_samples.jsonl --problems examples/problems.jsonl \
-    --out example_scored.jsonl
-```
-
-For a benchmark, download it (see [Data](#data)), convert it, then sample and score:
+Once it prints `Application startup complete`, download a benchmark (see [Data](#data)), convert
+it, then sample and score from another shell:
 
 ```bash
 python load.py --suite lcb --path data/test6.jsonl --out problems.jsonl
@@ -50,6 +51,10 @@ python score.py --samples samples.jsonl --problems problems.jsonl --out scored.j
 methods at once with up to 1024 requests in flight (change with `--workers`), appends each
 problem's samples to `--out` as soon as they finish, and skips problems already in `--out` when
 re-run.
+
+Solutions that mention the approach they were given are dropped. Pass `--keep-leaked` to keep
+them; every sample's `leaked` field says whether it mentions its approach. The phrases that count
+are `LEAK_TERMS` in `prompts.py`.
 
 `score.py` prints the number of samples, correct samples and solved problems for each method. A
 problem is solved if at least one of its samples passes every test.
@@ -69,6 +74,7 @@ seconds and 4 GB of memory.
 | `sample.py` | sampling |
 | `score.py` | grading |
 | `call_harness.py` | runs function-call tests (LiveCodeBench) |
+| `demo.py` | the quick check above |
 | `load.py` | converts LiveCodeBench, Cobalt and OJBench files to the problem format |
 
 ## Data
@@ -103,15 +109,8 @@ Samples:
 
 ```json
 {"problem_id": "cobalt:1001", "method": "groot", "approach": "...", "probability": null,
- "plan": "...", "output": "...", "finish_reason": "stop"}
+ "plan": "...", "output": "...", "finish_reason": "stop", "leaked": false}
 ```
 
 `approach` and `plan` are null for IID, and `probability` is set only for VS. `score.py` adds
 `code` and `correct`.
-
-## Tests
-
-```bash
-pip install pytest
-pytest tests/
-```

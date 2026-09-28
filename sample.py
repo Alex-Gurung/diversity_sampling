@@ -2,7 +2,7 @@
 
 IID solves each problem n times. VS and Groot first ask the model for n approaches (VS as a list
 with probabilities, Groot as paths through a decision tree), then solve once per approach.
-Solutions that mention the approach they were given are dropped.
+Solutions that mention the approach they were given are dropped unless --keep-leaked is set.
 
 Start a vLLM server, then sample from it:
 
@@ -47,7 +47,7 @@ def chat(url: str, model: str, message: str, temperature: float) -> tuple[str, s
 async def sample_problem(
     args: argparse.Namespace, limit: asyncio.Semaphore, problem: dict, method: str
 ) -> tuple[list[dict], int]:
-    """Returns the problem's samples and how many were dropped for mentioning their approach."""
+    """Returns the problem's samples and how many of them mention their approach."""
 
     async def ask(message: str, temperature: float) -> tuple[str, str]:
         async with limit:
@@ -76,11 +76,14 @@ async def sample_problem(
             "plan": plan,
             "output": output,
             "finish_reason": finish_reason,
+            "leaked": approach is not None and prompts.mentions_approach(output),
         }
         for approach, (output, finish_reason) in zip(approaches, solutions, strict=True)
-        if not (approach and prompts.mentions_approach(output))
     ]
-    return records, len(approaches) - len(records)
+    leaked = sum(record["leaked"] for record in records)
+    if not args.keep_leaked:
+        records = [record for record in records if not record["leaked"]]
+    return records, leaked
 
 
 async def run(args: argparse.Namespace) -> None:
@@ -99,14 +102,17 @@ async def run(args: argparse.Namespace) -> None:
     asyncio.get_running_loop().set_default_executor(ThreadPoolExecutor(args.workers))
     limit = asyncio.Semaphore(args.workers)
     tasks = [asyncio.create_task(sample_problem(args, limit, p, m)) for p, m in units]
-    written = dropped = 0
+    written = leaked = 0
     with args.out.open("a") as out:
         for finished in asyncio.as_completed(tasks):
-            records, leaked = await finished
+            records, problem_leaked = await finished
             out.write("".join(json.dumps(record) + "\n" for record in records))
             out.flush()
-            written, dropped = written + len(records), dropped + leaked
-    print(f"wrote {written} samples to {args.out}, dropped {dropped} that mentioned their approach")
+            written, leaked = written + len(records), leaked + problem_leaked
+    kept = "kept" if args.keep_leaked else "dropped"
+    print(
+        f"wrote {written} samples to {args.out}; {leaked} mentioned their approach and were {kept}"
+    )
 
 
 def main() -> None:
@@ -120,6 +126,11 @@ def main() -> None:
     parser.add_argument("--model", default="Qwen/Qwen3-4B-Instruct-2507")
     parser.add_argument("--url", default="http://localhost:8000/v1", help="the vLLM server")
     parser.add_argument("--workers", type=int, default=1024, help="requests in flight")
+    parser.add_argument(
+        "--keep-leaked",
+        action="store_true",
+        help="keep solutions that mention their approach (they have leaked: true)",
+    )
     asyncio.run(run(parser.parse_args()))
 
 

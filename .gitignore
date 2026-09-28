@@ -1,7 +1,7 @@
 __pycache__/
-.pytest_cache/
 .ruff_cache/
 .venv/
 uv.lock
 *.jsonl
 !examples/*.jsonl
+*.log

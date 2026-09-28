@@ -1,12 +1,9 @@
 [project]
 name = "diversity-sampling"
 version = "0.1.0"
-description = "VS and GROOT sampling for code generation"
+description = "VS and Groot sampling for code generation"
 requires-python = ">=3.10"
 dependencies = ["vllm"]
-
-[dependency-groups]
-dev = ["pytest", "ruff", "vulture"]
 
 [tool.ruff]
 line-length = 100
@@ -14,6 +11,3 @@ line-length = 100
 [tool.ruff.lint]
 select = ["E", "F", "W", "I", "UP", "B", "SIM", "RUF"]
 ignore = ["SIM905"]  # allow "a b c".split() for word lists
-
-[tool.pytest.ini_options]
-pythonpath = ["."]
